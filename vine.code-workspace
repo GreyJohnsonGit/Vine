@@ -7,5 +7,11 @@
 	"settings": {
     "editor.tabSize": 2,
 		"files.eol": "\n",
+		"explorer.fileNesting.enabled": true,
+		"explorer.fileNesting.patterns": {
+			"*.ts": "${capture}.test.ts",
+			"tsconfig.json": "tsconfig.*.json",
+			"package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, tsconfig.json, *.code-workspace, jest.config.ts, .eslintrc.json, .gitignore",
+		}
   }
 }
