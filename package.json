@@ -1,0 +1,24 @@
+{
+  "name": "vine",
+  "version": "0.1.0",
+  "description": "",
+  "main": "Source/Main.ts",
+  "scripts": {
+    "dev": "node --no-warnings --loader ts-node/esm Source/Main.ts",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "author": "Grey \"Monad\" Johnson",
+  "license": "MIT",
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
+    "@typescript-eslint/parser": "^7.10.0",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/jest": "^29.5.12"
+  }
+}
