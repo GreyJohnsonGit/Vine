@@ -7,6 +7,7 @@
 	"settings": {
     "editor.tabSize": 2,
 		"files.eol": "\n",
+		"editor.rulers": [80],
 		"explorer.fileNesting.enabled": true,
 		"explorer.fileNesting.patterns": {
 			"*.ts": "${capture}.test.ts",

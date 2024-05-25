@@ -6,9 +6,19 @@
 import type {Config} from 'jest';
 
 const config: Config = {
+  preset: 'ts-jest',
   clearMocks: true,
-  transform: {},
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        useESM: true,
+      },
+    ],
+  },
   extensionsToTreatAsEsm: ['.ts'],
+  testEnvironment: 'node',
+  verbose: true,
 };
 
 export default config;
