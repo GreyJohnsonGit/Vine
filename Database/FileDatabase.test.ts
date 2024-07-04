@@ -1,5 +1,5 @@
-import { FileDatabase } from './FileDatabase.ts';
 import { v4 as uuidV4 } from 'uuid';
+import { FileDatabase } from './FileDatabase.ts';
 
 describe(FileDatabase.name, () => {
   describe(FileDatabase.new.name, () => {
@@ -22,13 +22,15 @@ describe(FileDatabase.name, () => {
             seriesId: '123',
             revision: 0,
             name: 'Test Form',
-            description: 'Test Form Description'
+            description: 'Test Form Description',
+            isDraft: false
           },
           {
             seriesId: '456',
             revision: 0,
             name: 'Test Form 2',
-            description: 'Test Form Description 2'
+            description: 'Test Form Description 2',
+            isDraft: false
           }
         ].map(formSchema => fileDatabase.create('formSchema', formSchema));
     
@@ -51,13 +53,15 @@ describe(FileDatabase.name, () => {
             seriesId: '123',
             revision: 0,
             name: 'Test Form',
-            description: 'Test Form Description'
+            description: 'Test Form Description',
+            isDraft: false
           },
           {
             seriesId: '456',
             revision: 0,
             name: 'Test Form 2',
-            description: 'Test Form Description 2'
+            description: 'Test Form Description 2',
+            isDraft: false
           }
         ].map(formSchema => fileDatabase.create('formSchema', formSchema));
     
@@ -87,7 +91,8 @@ describe(FileDatabase.name, () => {
           seriesId: uuidV4(),
           revision: 0,
           name: 'Test Form',
-          description: 'Test Form Description'
+          description: 'Test Form Description',
+          isDraft: false
         };
   
         // Act
@@ -104,7 +109,8 @@ describe(FileDatabase.name, () => {
           seriesId: '123',
           revision: 0,
           name: 'Test Form',
-          description: 'Test Form Description'
+          description: 'Test Form Description',
+          isDraft: false
         };
         fileDatabase.create('formSchema', formSchema);
 
@@ -129,7 +135,8 @@ describe(FileDatabase.name, () => {
           seriesId: '123',
           revision: 0,
           name: 'Test Form',
-          description: 'Test Form Description'
+          description: 'Test Form Description',
+          isDraft: false
         };
         fileDatabase.create('formSchema', formSchema);
 

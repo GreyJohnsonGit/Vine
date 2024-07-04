@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "jsx": "react-jsx",
     "target": "ESNext",
     "module": "ESNext",
     "rootDir": "./",
@@ -26,7 +27,7 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
   },
-  "include": ["Source/**/*"]
+  "include": ["Database/**/*", "Ui/**/*"]
 }

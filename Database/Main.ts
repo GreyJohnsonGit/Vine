@@ -3,7 +3,7 @@ import { Ok } from './Result.js';
 import { v4 as uuidV4 } from 'uuid';
 
 async function main() {
-  const databaseFilePath = './Database/data.json';
+  const databaseFilePath = './Data/data.json';
 
   let loadDatabase = FileDatabase.fromFileSync(databaseFilePath);
   if (loadDatabase.isErr()) {

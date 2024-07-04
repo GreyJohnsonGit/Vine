@@ -1,18 +1,19 @@
-import { 
-  Err, 
-  Ok, 
-  Result 
-} from './Result.ts';
-import { 
-  FormField, 
-  FormSchemaField, 
-  FormSchema, 
-  Form 
-} from './Schema.ts';
 import FileSystemSync from 'fs';
+import {
+  Err,
+  Ok,
+  Result
+} from './Result.ts';
+import {
+  Form,
+  FormField,
+  FormSchema,
+  FormSchemaField
+} from './Schema.ts';
 
 export interface IFileDatabase {
   toFileSync(path: string): Result<void, FileSaveError>;
+  toJson(): Tables;
 
   read(
     tableId: 'formSchema',
@@ -48,6 +49,20 @@ export interface IFileDatabase {
     tableId: TableId,
     data: unknown
   ): Result<void, NotFoundError>;
+
+  delete(
+    tableId: 'formSchema',
+    query: (row: FormSchema) => boolean
+  ): Result<void, NotFoundError>;
+  delete(
+    tableId: TableId,
+    query: (row: unknown) => boolean
+  ): Result<void, NotFoundError>;
+
+  publish<T extends TableId>(
+    tableId: T,
+    query: (row: Tables[T][0]) => boolean
+  ): Result<void, NotFoundError>;
 }
 
 export class FileDatabase implements IFileDatabase {
@@ -62,10 +77,14 @@ export class FileDatabase implements IFileDatabase {
       formSchema: [],
       formSchemaField: [],
       form: [],
-      formField: []
+      formField: [],
     });
   }
   
+  static fromJson(data: Tables): FileDatabase {
+    return new FileDatabase(data);
+  }
+
   static fromFileSync(path: string): Result<
     FileDatabase, 
     FileNotFoundError | FileParseError | FileValidationError
@@ -73,8 +92,8 @@ export class FileDatabase implements IFileDatabase {
     let fileData: string;
     try {
       fileData = FileSystemSync.readFileSync(path, 'utf-8');
-    } catch (error) {
-      return Err({ type: 'FileNotFoundError', path });
+    } catch (_error) {
+      return Err.of({ type: 'FileNotFoundError', path });
     }
     
     let parsedData: unknown;
@@ -82,7 +101,7 @@ export class FileDatabase implements IFileDatabase {
       parsedData = JSON.parse(fileData);
     } catch (error) {
       const message = (error as Error)?.message ?? 'Unknown error';
-      return Err({ type: 'FileParseError', message });
+      return Err.of({ type: 'FileParseError', message });
     }
 
     let data: Tables;
@@ -91,10 +110,10 @@ export class FileDatabase implements IFileDatabase {
       data = parsedData as Tables;
     } catch (error) {
       const message = (error as Error)?.message ?? 'Unknown error';
-      return Err({ type: 'FileValidationError', message });
+      return Err.of({ type: 'FileValidationError', message });
     }
 
-    return Ok(new FileDatabase(data));
+    return Ok.of(new FileDatabase(data));
   }
 
   toFileSync(path: string): Result<void, FileSaveError> {
@@ -106,24 +125,26 @@ export class FileDatabase implements IFileDatabase {
       );
     } catch (error) {
       const message = (error as Error)?.message ?? 'Unknown error';
-      return Err({ type: 'FileSaveError', message });
+      return Err.of({ type: 'FileSaveError', message });
     }
 
-    return Ok(undefined);
+    return Ok.void();
+  }
+
+  toJson(): Tables {
+    return this.#table;
   }
 
   read(
     tableId: 'formSchema',
     query: (row: FormSchema) => boolean
   ): Result<FormSchema[], never>;
-  read(
-    tableId: TableId,
-    query: unknown
+  read<T extends TableId>(
+    tableId: T,
+    query: (row: Tables[T][0]) => boolean
   ): Result<unknown[], never> {
     if (tableId === 'formSchema') {
-      const rows = this.#table.formSchema
-        .filter(query as ((row: FormSchema) => boolean));
-      return Ok(rows);
+      return Ok.of(this.#table.formSchema.filter(query));
     }
 
     throw new Error('Not implemented');
@@ -157,7 +178,7 @@ export class FileDatabase implements IFileDatabase {
         const sameRevision = row.revision === formSchema.revision;
         const primaryKeyViolation = sameSeriesId && sameRevision;
         if (primaryKeyViolation) {
-          return Err({
+          return Err.of({
             type: 'PrimaryKeyError',
             message: `${tableId}: ${formSchema.seriesId}/${formSchema.revision}`
           });
@@ -165,7 +186,7 @@ export class FileDatabase implements IFileDatabase {
       }
 
       this.#table.formSchema.push(formSchema);
-      return Ok(undefined);
+      return Ok.void();
     }
 
     case 'formSchemaField': {
@@ -201,7 +222,7 @@ export class FileDatabase implements IFileDatabase {
         .at(-1);
 
       if (previousRevision === undefined) {
-        return Err({
+        return Err.of({
           type: 'NotFoundError',
           message: `Form Schema, '${seriesId}', Not found`
         });
@@ -214,7 +235,55 @@ export class FileDatabase implements IFileDatabase {
       };
 
       this.#table.formSchema.push(nextRevision);
-      return Ok(undefined);
+      return Ok.void();
+    }
+
+    throw new Error('Not implemented');
+  }
+
+  delete(
+    tableId: 'formSchema',
+    query: (row: FormSchema) => boolean
+  ): Result<void, NotFoundError>;
+  delete<T extends TableId>(
+    tableId: T,
+    query: (row: Tables[T][0]) => boolean
+  ): Result<void, NotFoundError> {
+    if (tableId === 'formSchema') {
+      const rows = this.#table.formSchema.filter(query);
+      if (rows.length === 0) {
+        return Err.of({
+          type: 'NotFoundError',
+          message: 'No rows found'
+        });
+      }
+
+      this.#table.formSchema = this.#table.formSchema
+        .filter(row => !query(row));
+      return Ok.void();
+    }
+
+    throw new Error('Not implemented');
+  }
+
+  publish<T extends TableId>(
+    tableId: T,
+    query: (row: Tables[T][0]) => boolean
+  ): Result<void, NotFoundError> {
+    if (tableId === 'formSchema') {
+      const rows = this.#table.formSchema.filter(query);
+      if (rows.length === 0) {
+        return Err.of({
+          type: 'NotFoundError',
+          message: 'No rows found'
+        });
+      }
+
+      for (const row of rows) {
+        row.isDraft = false;
+      }
+
+      return Ok.void();
     }
 
     throw new Error('Not implemented');

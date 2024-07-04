@@ -4,6 +4,7 @@ export type FormSchema = {
   revision: number; // Series Revision
   name: string; // Schema Name
   description: string; // Schema Description
+  isDraft: boolean; // Schema Draft Status
 }
 
 export type FormSchemaField = {
