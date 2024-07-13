@@ -2,6 +2,7 @@ import axios from 'axios';
 import { createRoot } from 'react-dom/client';
 import { FileDatabase } from '../Database/FileDatabase.js';
 import { App } from './App.jsx';
+import { LibraryProvider } from './LibraryContext.js';
 import './simple.css';
 
 (async function Main() {
@@ -18,9 +19,18 @@ import './simple.css';
       .then(JSON.parse)
   );
 
-  const library = {
-    database
+  const save = async () => {
+    await axios.post('http://localhost:5052/save/', database.toJson());
   };
 
-  createRoot(root).render(<App library={library}/>);
+  const library = {
+    database,
+    save
+  };
+
+  createRoot(root).render(
+    <LibraryProvider library={library}>
+      <App/>
+    </LibraryProvider>
+  );
 })();

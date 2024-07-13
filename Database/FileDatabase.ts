@@ -20,6 +20,10 @@ export interface IFileDatabase {
     query: (row: FormSchema) => boolean
   ): Result<FormSchema[], never>;
   read(
+    tableId: 'formSchemaField',
+    query: (row: FormSchemaField) => boolean
+  ): Result<FormSchemaField[], never>;
+  read(
     tableId: TableId,
     query: (row: unknown) => boolean
   ): Result<unknown[], never>;
@@ -139,12 +143,20 @@ export class FileDatabase implements IFileDatabase {
     tableId: 'formSchema',
     query: (row: FormSchema) => boolean
   ): Result<FormSchema[], never>;
+  read(
+    tableId: 'formSchemaField',
+    query: (row: FormSchemaField) => boolean
+  ): Result<FormSchemaField[], never>;
   read<T extends TableId>(
     tableId: T,
     query: (row: Tables[T][0]) => boolean
   ): Result<unknown[], never> {
     if (tableId === 'formSchema') {
       return Ok.of(this.#table.formSchema.filter(query));
+    }
+
+    if (tableId === 'formSchemaField') {
+      return Ok.of(this.#table.formSchemaField.filter(query));
     }
 
     throw new Error('Not implemented');
@@ -190,7 +202,31 @@ export class FileDatabase implements IFileDatabase {
     }
 
     case 'formSchemaField': {
-      throw new Error('Not implemented');
+      const formSchemaField = data as FormSchemaField;
+      for (const row of this.#table.formSchemaField) {
+        const sameSchemaSeriesId = 
+          row.schemaSeriesId === formSchemaField.schemaSeriesId;
+        const sameSchemaRevision =
+          row.schemaRevision === formSchemaField.schemaRevision;
+        const sameFieldId = row.id === formSchemaField.id;
+        
+        if (
+          sameSchemaSeriesId && 
+          sameSchemaRevision && 
+          sameFieldId
+        ) {
+          return Err.of({
+            type: 'PrimaryKeyError',
+            message: 
+              `${tableId}: ` +
+              `${formSchemaField.schemaSeriesId}/` +
+              `${formSchemaField.schemaRevision}/` +
+              `${formSchemaField.id}`
+          });
+        }
+      }
+      this.#table.formSchemaField.push(formSchemaField);
+      return Ok.void();
     }
 
     case 'form': {

@@ -1,15 +1,13 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { IFileDatabase } from '../Database/FileDatabase.js';
+import { useLibrary } from './LibraryContext.js';
 
 export interface SchemasProps {
-  library: {
-    database: IFileDatabase
-  },
   setPage: (page: string) => void;
 }
 
-export function Schemas({ library: { database }, setPage }: SchemasProps) {
+export function Schemas({ setPage }: SchemasProps) {
+  const { database } = useLibrary();
   const [remoteChanges, setRemoteChanges] = useState(false);
   const [showDrafts, setShowDrafts] = useState(false);
 

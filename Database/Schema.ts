@@ -15,9 +15,10 @@ export type FormSchemaField = {
   // Field Definition
   id: string; // Field ID
   page: number; // Page Number
+  weight: number; // Field Weight
   name: string; // Field Name
   description: string; // Field Description
-  type: string; // Field Type
+  type: FormFieldType; // Field Type
   required: boolean; // Field Required
 }
 
@@ -44,3 +45,18 @@ export type FormField = {
   // Field Value
   value: string; // Field Value
 }
+
+export type FormFieldType = 
+| 'static-title'
+| 'static-paragraph'
+| 'static-url'
+| 'static-image'
+| 'text' 
+| 'paragraph'
+| 'number'
+| 'date'
+| 'email'
+| 'url'
+| 'checkbox'
+| 'radio'
+| 'multi';

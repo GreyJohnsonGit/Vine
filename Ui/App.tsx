@@ -1,15 +1,10 @@
 import { useState } from 'react';
-import { IFileDatabase } from '../Database/FileDatabase.js';
-import { CreateNewSchema } from './CreateNewSchema.js';
+import { CreateSchema } from './CreateSchema.js';
+import { CreateSchemaField } from './CreateSchemaField.js';
+import { SchemaFields } from './SchemaFields.js';
 import { Schemas } from './Schemas.js';
 
-export interface AppProps {
-  library: {
-    database: IFileDatabase
-  }
-}
-
-export function App({ library: { database } }: AppProps) {
+export function App() {
   const [page, setPage] = useState('home');
 
   return (
@@ -21,14 +16,21 @@ export function App({ library: { database } }: AppProps) {
         <button onClick={() => setPage('schemas')}>
           Schemas
         </button>
+        <button onClick={() => setPage('schemaFields')}>
+          Schema Fields
+        </button>
       </div>
 
       {(() => {
         switch (page) {
         case 'createNewSchema':
-          return <CreateNewSchema library={{ database }} />;
+          return <CreateSchema/>;
         case 'schemas':
-          return <Schemas library={{ database }} setPage={setPage} />;
+          return <Schemas setPage={setPage} />;
+        case 'createNewSchemaField':
+          return <CreateSchemaField/>;
+        case 'schemaFields':
+          return <SchemaFields setPage={setPage} />;
         default:
           return <h4>Home</h4>;
         }

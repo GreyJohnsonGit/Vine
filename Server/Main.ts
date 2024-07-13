@@ -16,7 +16,6 @@ import { FileDatabase } from '../Database/FileDatabase.js';
   });
 
   app.post('/save/', async (request, response) => {
-    console.log(request.body);
     const database = FileDatabase.fromJson(request.body);
     database.toFileSync('./Data/data.json');
     response.sendStatus(HttpStatusCode.Ok);

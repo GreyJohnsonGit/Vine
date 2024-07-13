@@ -1,17 +1,10 @@
 import { useReducer } from 'react';
 import { v4 as uuidV4 } from 'uuid';
-import { IFileDatabase } from '../Database/FileDatabase.ts';
 import { FormSchema } from '../Database/Schema.ts';
+import { useLibrary } from './LibraryContext.tsx';
 
-export interface CreateNewSchemaProps {
-  library: {
-    database: IFileDatabase
-  }
-}
-
-export function CreateNewSchema(
-  { library: { database } }: CreateNewSchemaProps
-) {
+export function CreateSchema() {
+  const { database, save } = useLibrary();
   const [newSchema, updateNewSchema] = useReducer((
     state: FormSchema, 
     updates: Partial<FormSchema>
@@ -55,6 +48,7 @@ export function CreateNewSchema(
 
       <button onClick={() => {
         database.create('formSchema', newSchema);
+        save();
         clearNewSchema();
       }}>
         Create
